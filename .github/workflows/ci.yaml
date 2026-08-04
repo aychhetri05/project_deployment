@@ -2,7 +2,7 @@ name: Deploy react app to azure vm
  on:
    push:
     branches:
-     -main   
+      - main   
 
 jobs:
   build-and-deploy:
