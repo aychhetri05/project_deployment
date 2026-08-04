@@ -1,0 +1,37 @@
+name: Deploy react app to azure vm
+ on:
+   push:
+    branches:
+     -main   
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest 
+
+    steps: 
+      - name: checkout code
+        uses: actions/checkout@v4
+      
+      - name: set up node.js
+        uses: actions/setup-node@v4 
+        with:
+          node-version: 20
+          cache: "npm" 
+      
+      - name: install dependencies
+        run: npm ci
+
+      - name: build app
+        run: npm run build
+      - name: copy build artifacts via scp
+        uses: appleboy/scp-action@v1.0.1
+        with:
+          host: ${{ secrets.AZURE_VM_IP }}
+          username: ${{ secrets.AZURE_VM_USERNAME }}
+          key: ${{ secrets.AZURE_SSH_KEY }}
+          port: 22
+          source: "dist/*"
+          target: "/var/www/html/react-project"
+          rm: true
+        
+      
